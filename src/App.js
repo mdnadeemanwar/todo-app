@@ -16,7 +16,7 @@ function App() {
           rel="noopener noreferrer"
         >
           <div style={{textAlign: 'center', color: '#61dafb', lineHeight: 1.2}}>
-            <h1 style={{margin: 0, fontSize: '1.8rem', fontWeight: 700}}>Learn React with Nadeem</h1>
+            <h1 style={{margin: 0, fontSize: '1.8rem', fontWeight: 700}}>Learn React with Nadeem Anwar</h1>
             <p style={{margin: '0.4rem 0 0', fontSize: '0.95rem', opacity: 0.9}}>
               Hands‑on lessons to build beautiful, modern UIs using components, hooks, and real projects.
             </p>
