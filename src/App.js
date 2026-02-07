@@ -1,31 +1,47 @@
-import logo from './logo.svg';
 import './App.css';
+import React from 'react';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <div style={{textAlign: 'center', color: '#61dafb', lineHeight: 1.2}}>
-            <h1 style={{margin: 0, fontSize: '1.8rem', fontWeight: 700}}>Learn React with Nadeem Anwar</h1>
-            <p style={{margin: '0.4rem 0 0', fontSize: '0.95rem', opacity: 0.9}}>
-              Hands‑on lessons to build beautiful, modern UIs using components, hooks, and real projects.
-            </p>
-          </div>
-        </a>
-      </header>
+      <h1>Nadeem Anwar Todo Application</h1>
+      <FirstComponent />
+      <SecondComponent />
+      <ThirdComponent />
     </div>
   );
 }
+
+//creating our first component
+function FirstComponent() {
+  return (
+    <div>
+      <h1>This is my first component</h1>
+    </div>
+  );
+}
+
+function SecondComponent() {
+  return (
+    <div>
+      <h1>This is my second component</h1>
+    </div>
+  );
+} 
+
+
+
+//creating first class component
+class ThirdComponent extends React.Component {
+  render() {
+    return (
+      <div>
+        <h1>This is my third class component</h1>
+      </div>
+    );
+  }
+}
+
 
 export default App;
 
