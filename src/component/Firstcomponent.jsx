@@ -8,4 +8,13 @@ function FirstComponent() {
   );
 }
 
+
+export function SecondComponent() {
+  return (
+    <div>
+      <h1>This is my second component</h1>
+    </div>
+  );
+}
+
 export default FirstComponent;
