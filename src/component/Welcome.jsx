@@ -9,6 +9,7 @@ function Welcome() {
   return (
     <div>
       <h1>Welcome to my todo app, {username}!</h1>
+      <h2>manage your todo <a href="/todos">here</a></h2>
     </div>
   );
 }

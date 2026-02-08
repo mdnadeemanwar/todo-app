@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { BrowserRouter, Routes, useNavigate ,Route} from "react-router-dom";
 import Welcome from "../Welcome";
 import ErrorComponent from "../ErrorComponent";
+import Todos from "../Todos";
 
 function Todo() {
 
@@ -12,6 +13,7 @@ function Todo() {
       <Routes>
         <Route path="/" element={<LoginComponent />} />
         <Route path="/welcome/:username" element={<Welcome />} />
+        <Route path="/todos" element={<Todos />} />
         <Route path="/*" element={<ErrorComponent />} />
       </Routes>
       </BrowserRouter>
