@@ -4,11 +4,14 @@ import { BrowserRouter, Routes, useNavigate ,Route} from "react-router-dom";
 import Welcome from "../Welcome";
 import ErrorComponent from "../ErrorComponent";
 import Todos from "../Todos";
+import HeaderComponent from "../HeaderComponent";
+import FooterComponent from "../FooterComponent";
 
 function Todo() {
 
   return (
     <>
+    <HeaderComponent title="Todo App" showNav={true} />
       <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginComponent />} />
@@ -17,6 +20,8 @@ function Todo() {
         <Route path="/*" element={<ErrorComponent />} />
       </Routes>
       </BrowserRouter>
+      <FooterComponent />
+      
     </>
   );
 }
