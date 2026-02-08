@@ -1,11 +1,19 @@
 import React, { useState } from "react";
 // import './Todo.css';
+import { BrowserRouter, Routes, useNavigate ,Route} from "react-router-dom";
+import Welcome from "../Welcome";
 
 function Todo() {
+
   return (
-    <div>
-      <LoginComponent />
-    </div>
+    <>
+      <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginComponent />} />
+        <Route path="/welcome" element={<Welcome />} />
+      </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
@@ -15,6 +23,9 @@ function LoginComponent() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigate = useNavigate();
+
+
   function handleSubmit(event) {
     event.preventDefault();
     if (username === "admin" && password === "password") {
@@ -22,6 +33,7 @@ function LoginComponent() {
       setShowError(false);
       setUsername('')
       setPassword('')
+      navigate('/welcome')
     } else {
       setShowError(true);
       setShowSuccess(false);
@@ -74,5 +86,7 @@ function LoginComponent() {
     </div>
   );
 }
+
+
 
 export default Todo;
