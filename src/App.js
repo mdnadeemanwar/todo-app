@@ -1,15 +1,11 @@
 import './App.css';
 import React from 'react';
-import FirstComponent from './component/Firstcomponent';
-import { SecondComponent } from './component/Firstcomponent';
+import Todo from './component/todo/Todo';
 
 function App() {
   return (
     <div className="App">
-      <h1>Nadeem Anwar Todo Application</h1>
-
-      <FirstComponent />
-      <SecondComponent />
+     <Todo/>
     </div>
   );
 }
