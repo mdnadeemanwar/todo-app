@@ -2,7 +2,9 @@ import React from "react";
 import { useParams } from "react-router-dom";
 
 function Welcome() {
-  const { username } = useParams();
+  const params = useParams();
+  console.log("params in welcome component", params);
+  const username = params.username; 
 
   return (
     <div>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 // import './Todo.css';
 import { BrowserRouter, Routes, useNavigate ,Route} from "react-router-dom";
 import Welcome from "../Welcome";
+import ErrorComponent from "../ErrorComponent";
 
 function Todo() {
 
@@ -10,7 +11,7 @@ function Todo() {
       <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginComponent />} />
-        <Route path="/welcome" element={<Welcome />} />
+        <Route path="/welcome/:username" element={<Welcome />} />
         <Route path="/*" element={<ErrorComponent />} />
       </Routes>
       </BrowserRouter>
@@ -34,7 +35,8 @@ function LoginComponent() {
       setShowError(false);
       setUsername('')
       setPassword('')
-      navigate('/welcome')
+      navigate(`/welcome/${username}`);
+
     } else {
       setShowError(true);
       setShowSuccess(false);
