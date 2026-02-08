@@ -11,6 +11,7 @@ function Todo() {
       <Routes>
         <Route path="/" element={<LoginComponent />} />
         <Route path="/welcome" element={<Welcome />} />
+        <Route path="/*" element={<ErrorComponent />} />
       </Routes>
       </BrowserRouter>
     </>

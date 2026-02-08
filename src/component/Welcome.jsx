@@ -1,10 +1,12 @@
 import React from "react";    
-
+import { useParams } from "react-router-dom";
 
 function Welcome() {
+  const { username } = useParams();
+
   return (
     <div>
-      <h1>Welcome to my todo app</h1>
+      <h1>Welcome to my todo app, {username}!</h1>
     </div>
   );
 }
