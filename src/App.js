@@ -1,11 +1,11 @@
 import './App.css';
 import React from 'react';
-import Todo from './component/todo/Todo';
+import MainComponent from './component/todo/MainComponent';
 
 function App() {
   return (
     <div className="App">
-     <Todo/>
+     <MainComponent/>
     </div>
   );
 }
