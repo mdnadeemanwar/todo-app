@@ -1,4 +1,5 @@
-import React from "react";    
+import React, { useContext } from "react";    
+import { Authcontext } from "./security/AuthContext";
 
 function Todos() {
     const today = new Date();   
@@ -8,11 +9,14 @@ function Todos() {
         { id: 2, title: "Build a Todo App", completed: true ,targetDate: targetDate.toDateString()},
         { id: 3, title: "Master JavaScript", completed: false ,targetDate: targetDate.toDateString()},
       ];
+      const {isAuthenticated } = useContext(Authcontext);
 return (
     <div style={{ fontFamily: "Arial, sans-serif", padding: "24px", maxWidth: "900px", margin: "0 auto" }}>
-        <h1 style={{ marginBottom: "16px", color: "#333" }}>Welcome to my Todos</h1>
-
-        <table
+        {isAuthenticated ? (
+            <div>
+               
+            <h1 style={{ marginBottom: "16px", color: "#333" }}>Welcome to my Todos</h1>
+               <table
             style={{
                 width: "100%",
                 borderCollapse: "collapse",
@@ -58,6 +62,13 @@ return (
                 ))}
             </tbody>
         </table>
+         </div>
+        ) 
+        : (
+            <h1 style={{ marginBottom: "16px", color: "#333" }}>Please log in to view your Todos</h1>
+        )}
+
+     
     </div>
 );
 }
