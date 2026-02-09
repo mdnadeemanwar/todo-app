@@ -1,27 +1,27 @@
 import React, { useState } from "react";
 // import './Todo.css';
-import { BrowserRouter, Routes, useNavigate ,Route} from "react-router-dom";
+import { BrowserRouter, Routes, useNavigate, Route } from "react-router-dom";
 import Welcome from "../Welcome";
 import ErrorComponent from "../ErrorComponent";
 import Todos from "../Todos";
 import HeaderComponent from "../HeaderComponent";
 import FooterComponent from "../FooterComponent";
+import LogoutComponent from "../LogoutComponent";
 
 function Todo() {
-
   return (
     <>
-    <HeaderComponent title="Todo App" showNav={true} />
       <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LoginComponent />} />
-        <Route path="/welcome/:username" element={<Welcome />} />
-        <Route path="/todos" element={<Todos />} />
-        <Route path="/*" element={<ErrorComponent />} />
-      </Routes>
+        <HeaderComponent title="Todo App" showNav={true} />
+        <Routes>
+          <Route path="/" element={<LoginComponent />} />
+          <Route path="/welcome/:username" element={<Welcome />} />
+          <Route path="/todos" element={<Todos />} />
+          <Route path="/*" element={<ErrorComponent />} />
+          <Route path="/logout" element={<LogoutComponent />} />
+        </Routes>
+        <FooterComponent />
       </BrowserRouter>
-      <FooterComponent />
-      
     </>
   );
 }
@@ -34,16 +34,14 @@ function LoginComponent() {
 
   const navigate = useNavigate();
 
-
   function handleSubmit(event) {
     event.preventDefault();
     if (username === "admin" && password === "password") {
       setShowSuccess(true);
       setShowError(false);
-      setUsername('')
-      setPassword('')
+      setUsername("");
+      setPassword("");
       navigate(`/welcome/${username}`);
-
     } else {
       setShowError(true);
       setShowSuccess(false);
@@ -96,7 +94,5 @@ function LoginComponent() {
     </div>
   );
 }
-
-
 
 export default Todo;
