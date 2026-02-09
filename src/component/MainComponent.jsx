@@ -1,6 +1,6 @@
 import { useContext } from "react";
 // import './Todo.css';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Welcome from "./Welcome";
 import ErrorComponent from "./ErrorComponent";
 import Todos from "./Todos";
@@ -16,10 +16,11 @@ function MainComponent() {
 function AuthenticatedRoute({ children }) {
   const { isAuthenticated } = useContext(Authcontext) || {};
   console.log('AuthenticatedRoute rendered, isAuthenticated:', isAuthenticated);
-  if (isAuthenticated) {
-    return children;
+  if(!isAuthenticated){
+    return  <Navigate to="/" />
   }
-  return null;
+  return children
+  
 }
 
   return (
@@ -40,7 +41,11 @@ function AuthenticatedRoute({ children }) {
             </AuthenticatedRoute>
           } />
           <Route path="/*" element={<ErrorComponent />} />
-          <Route path="/logout" element={<LogoutComponent />} />
+          <Route path="/logout" element={
+            <AuthenticatedRoute>
+              <LogoutComponent />
+            </AuthenticatedRoute>
+          } />
         </Routes>
         <FooterComponent />
       </BrowserRouter>
