@@ -1,8 +1,7 @@
 import React, { useContext } from "react";    
 import { Link, useParams } from "react-router-dom";
 import { Authcontext } from "./security/AuthContext";
-import apiCallForHelloWorld,{apiCallForHelloWorldWithPathVariable} from "./api/HelloWorldApiCall";
-
+import { apiCallForTodoApiWithPathVariable } from "./api/TodoApiCall";
 function Welcome() {
   const params = useParams();
   console.log("params in welcome component", params);
@@ -15,8 +14,8 @@ function Welcome() {
   //  const apiresponsedata = await apiCallForHelloWorld(`http://localhost:8080/hello-world/path-variable/${username}`);
   //   console.log("API response data in welcome component", apiresponsedata.message);
 
-    const apiresponsedata2 = await apiCallForHelloWorldWithPathVariable(username);
-    console.log("API response data in welcome component with path variable", apiresponsedata2.message);
+    // const apiresponsedata2 = await apiCallForTodoApiWithPathVariable(username);
+    // console.log("API response data in welcome component with path variable", apiresponsedata2);
   };
 
   return (
