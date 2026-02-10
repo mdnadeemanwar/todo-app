@@ -1,8 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Authcontext } from "./security/AuthContext";
-import { apiCallForTodoApiWithPathVariable } from "./api/TodoApiCall";
+import {
+  apiCallForTodoApiWithPathVariable,
+  apiCallForTodoApiForDeleteTodo,
+} from "./api/TodoApiCall";
 
- function Todos() {
+function Todos() {
   const today = new Date();
   const targetDate = new Date(
     today.getFullYear(),
@@ -17,20 +20,31 @@ import { apiCallForTodoApiWithPathVariable } from "./api/TodoApiCall";
   const [todos, setTodos] = useState([]);
   const { isAuthenticated, username } = useContext(Authcontext);
 
-
   useEffect(() => {
-  async function fetchTodos() {
+    async function fetchTodos() {
+      try {
+        const response = await apiCallForTodoApiWithPathVariable(username);
+        console.log("APi res inside the toods ", response);
+        setTodos(response);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchTodos();
+  }, []);
+
+  const deleteSingleTodo = async (id) => {
+    // Logic to delete a single todo item
+    console.log(`Delete Todo ${id} clicked`);
+    //   setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
     try {
-      const response = await apiCallForTodoApiWithPathVariable("admin");
-      console.log("APi res inside the toods ",response)
-      setTodos(response);
+      await apiCallForTodoApiForDeleteTodo(username, id);
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
     } catch (error) {
       console.error(error);
     }
-  }
-
-  fetchTodos();
-}, []);
+  };
 
   return (
     <div
@@ -90,7 +104,7 @@ import { apiCallForTodoApiWithPathVariable } from "./api/TodoApiCall";
                     borderBottom: "2px solid #eef2f5",
                   }}
                 >
-                  Status
+                  Action
                 </th>
               </tr>
             </thead>
@@ -146,6 +160,35 @@ import { apiCallForTodoApiWithPathVariable } from "./api/TodoApiCall";
                     >
                       {todo.completed ? "Completed" : "Pending"}
                     </span>
+                  </td>
+                  <td>
+                    <button
+                      style={{
+                        padding: "6px 12px",
+                        borderRadius: "4px",
+                        border: "none",
+                        backgroundColor: "#007bff",
+                        color: "#fff",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => alert(`Edit Todo ${todo.id}`)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      style={{
+                        padding: "6px 12px",
+                        borderRadius: "4px",
+                        border: "none",
+                        backgroundColor: "#dc3545",
+                        color: "#fff",
+                        cursor: "pointer",
+                        marginLeft: "8px",
+                      }}
+                      onClick={() => deleteSingleTodo(todo.id)}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
