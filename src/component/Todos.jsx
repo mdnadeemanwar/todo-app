@@ -4,6 +4,7 @@ import {
   apiCallForTodoApiWithPathVariable,
   apiCallForTodoApiForDeleteTodo,
 } from "./api/TodoApiCall";
+import { useNavigate } from "react-router-dom";
 
 function Todos() {
   const today = new Date();
@@ -12,6 +13,7 @@ function Todos() {
     today.getMonth(),
     today.getDate() + 7,
   );
+  const navigation = useNavigate();
   // const todos = [
   //     { id: 1, title: "Learn React", completed: false ,targetDate: targetDate.toDateString()},
   //     { id: 2, title: "Build a Todo App", completed: true ,targetDate: targetDate.toDateString()},
@@ -44,6 +46,12 @@ function Todos() {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const updateTodo = (id) => {   
+    // Logic to update a single todo item
+    console.log(`Update Todo ${id} clicked`);
+    navigation(`/todo/${id}`);
   };
 
   return (
@@ -171,9 +179,9 @@ function Todos() {
                         color: "#fff",
                         cursor: "pointer",
                       }}
-                      onClick={() => alert(`Edit Todo ${todo.id}`)}
+                      onClick={() => updateTodo(todo.id)}
                     >
-                      Edit
+                      update
                     </button>
                     <button
                       style={{

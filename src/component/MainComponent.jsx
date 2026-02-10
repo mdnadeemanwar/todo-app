@@ -9,6 +9,7 @@ import FooterComponent from "./FooterComponent";
 import LogoutComponent from "./LogoutComponent";
 import LoginComponent from "./LoginComponent";
 import AuthProvider, { Authcontext } from "./security/AuthContext";
+import TodoComponent from "./TodoComponent";
 
 function MainComponent() {
 
@@ -38,6 +39,11 @@ function AuthenticatedRoute({ children }) {
           <Route path="/todos" element={
             <AuthenticatedRoute>
               <Todos />
+            </AuthenticatedRoute>
+          } />
+          <Route path="/todo/:id" element={
+            <AuthenticatedRoute>
+              <TodoComponent />
             </AuthenticatedRoute>
           } />
           <Route path="/*" element={<ErrorComponent />} />
