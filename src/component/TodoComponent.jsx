@@ -1,15 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  retreiveTodoApi,
-  updateTodoApi,
-  createTodoApi,
-} from "./api/TodoApiCall";
+import { retreiveTodoApi } from "./api/TodoApiCall";
 import { Authcontext } from "./security/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { Formik } from "formik";
+import { updateTodoApi, createTodoApi } from "./api/TodoApiCall";
 
 function TodoComponent() {
   const { username } = useContext(Authcontext);
+  console.log("username in todo component", username);
   const { id } = useParams();
 
   const navigate = useNavigate();
@@ -61,10 +59,28 @@ function TodoComponent() {
     transition: "background 150ms ease",
   };
 
+  //   useEffect(() => {
+  //     try {
+  //       const fetchData = async () => {
+  //         const todo = await retreiveTodoApi(username, id);
+  //         console.log("todo inside the useEffect :", todo);
+  //         // Populate form fields with fetched todo data
+  //         // For example:
+  //         setTitle(todo.title);
+  //         setDescription(todo.description);
+  //         setTargetDate(todo.targetDate);
+  //       };
+  //       fetchData();
+  //     } catch (error) {
+  //       console.error("Error fetching todo:", error);
+  //     }
+  //   }, [id]);
+
   const [initialValues, setInitialValues] = useState({
     description: "",
     targetDate: "",
   });
+  console.log("id:", id);
   const isNewTodo = String(id) === "-1";
 
   const handleSubmit = async (values) => {
@@ -77,14 +93,11 @@ function TodoComponent() {
 
     try {
       if (isNewTodo) {
-        await createTodoApi(username, {
-          ...valuesToSend,
-          id: -1,
-        });
+        await createTodoApi(username, valuesToSend);
       } else {
-        await updateTodoApi(username, Number(id), {
+        await updateTodoApi(username, id, {
           ...valuesToSend,
-          id: Number(id),
+          id: id,
         });
       }
 
@@ -139,43 +152,44 @@ function TodoComponent() {
 
   return (
     <div style={containerStyle}>
-      <h2 style={headerStyle}>
-        {isNewTodo ? "Create todo here" : "Update todo here"}
-      </h2>
+      <h2 style={headerStyle}>{isNewTodo ? "Create todo here" : "Update todo here"}</h2>
       <Formik
         enableReinitialize
         initialValues={initialValues}
         onSubmit={handleSubmit}
       >
         {({ values, handleChange, handleSubmit }) => (
-          <form style={formStyle} onSubmit={handleSubmit}>
-            <input
-              type="text"
-              name="description"
-              placeholder="Todo description"
-              style={{ ...inputStyle, ...fullWidthStyle }}
-              value={values.description}
-              onChange={handleChange}
-            />
-            <input
-              type="date"
-              name="targetDate"
-              placeholder="Target date"
-              style={inputStyle}
-              value={values.targetDate}
-              onChange={handleChange}
-            />
-            <button
-              type="submit"
-              style={{
-                ...buttonStyle,
-                gridColumn: "1 / -1",
-                justifySelf: "end",
-              }}
-            >
-              {isNewTodo ? "Create Todo" : "Update Todo"}
-            </button>
-          </form>
+          <>
+            {console.log("Formik values:", values)}
+            <form style={formStyle} onSubmit={handleSubmit}>
+              <input
+                type="text"
+                name="description"
+                placeholder="Todo description"
+                style={{ ...inputStyle, ...fullWidthStyle }}
+                value={values.description}
+                onChange={handleChange}
+              />
+              <input
+                type="date"
+                name="targetDate"
+                placeholder="Target date"
+                style={inputStyle}
+                value={values.targetDate}
+                onChange={handleChange}
+              />
+              <button
+                type="submit"
+                style={{
+                  ...buttonStyle,
+                  gridColumn: "1 / -1",
+                  justifySelf: "end",
+                }}
+              >
+                {isNewTodo ? "Create Todo" : "Update Todo"}
+              </button>
+            </form>
+          </>
         )}
       </Formik>
     </div>
