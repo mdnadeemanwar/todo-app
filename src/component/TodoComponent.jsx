@@ -1,9 +1,9 @@
-import React, { use, useContext, useEffect,useState } from "react";
+import React, { use, useContext, useEffect, useState } from "react";
 import { retreiveTodoApi } from "./api/TodoApiCall";
 import { Authcontext } from "./security/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { Formik } from "formik";
-import {updateTodoApi} from "./api/TodoApiCall";
+import { updateTodoApi, createTodoApi } from "./api/TodoApiCall";
 
 function TodoComponent() {
   const { username } = useContext(Authcontext);
@@ -13,7 +13,7 @@ function TodoComponent() {
   const [description, setDescription] = React.useState("");
   const [targetDate, setTargetDate] = React.useState("");
 
-  const navigate = useNavigate();   
+  const navigate = useNavigate();
   const containerStyle = {
     maxWidth: "560px",
     margin: "2rem auto",
@@ -62,70 +62,139 @@ function TodoComponent() {
     transition: "background 150ms ease",
   };
 
-//   useEffect(() => {
-//     try {
-//       const fetchData = async () => {
-//         const todo = await retreiveTodoApi(username, id);
-//         console.log("todo inside the useEffect :", todo);
-//         // Populate form fields with fetched todo data
-//         // For example:
-//         setTitle(todo.title);
-//         setDescription(todo.description);
-//         setTargetDate(todo.targetDate);
-//       };
-//       fetchData();
-//     } catch (error) {
-//       console.error("Error fetching todo:", error);
-//     }
-//   }, [id]);
-
+  //   useEffect(() => {
+  //     try {
+  //       const fetchData = async () => {
+  //         const todo = await retreiveTodoApi(username, id);
+  //         console.log("todo inside the useEffect :", todo);
+  //         // Populate form fields with fetched todo data
+  //         // For example:
+  //         setTitle(todo.title);
+  //         setDescription(todo.description);
+  //         setTargetDate(todo.targetDate);
+  //       };
+  //       fetchData();
+  //     } catch (error) {
+  //       console.error("Error fetching todo:", error);
+  //     }
+  //   }, [id]);
 
   const [initialValues, setInitialValues] = useState({
-  description: "",
-  targetDate: "",
-});
+    description: "",
+    targetDate: "",
+  });
+  console.log("id:", id);
+  const isNewTodo = String(id) === "-1";
 
-useEffect(() => {
-  async function fetchTodo() {
-    const todo = await retreiveTodoApi(username, id);
-    setInitialValues({
-      description: todo.description,
-      targetDate: todo.targetDate,
-    });
-  }
-  fetchTodo();
-}, [id]);
+  const createEmptyTodo = async () => {
+    const valuesToSend = {
+      id: id,
+      username: username, // ✅ Add this line
+      description: description,
+      targetDate: targetDate,
+      done: false, // You can adjust this based on your form inputs
+    };
+    try {
+      const response = await createTodoApi(username, valuesToSend);
 
-const handleSubmit = (values) => {
-  console.log("Form submitted with values:", values);
-  // Here you would typically make an API call to update the todo item
-  // For example:
-  const valuesToUpdate = {
-    id: id,
-    username: username,  // ✅ Add this line
-    description: values.description,
-    targetDate: values.targetDate,
-    done: false, // You can adjust this based on your form inputs
+      console.log("Todo created successfully:", response);
+      navigate(`/todo/${response.id}`);
+    } catch (error) {
+      console.error("Error creating todo:", error);
+    }
   };
-  updateTodoApi(username, id, valuesToUpdate)
-    .then(response => {
-      console.log("Todo updated successfully:", response);
-      navigate('/todos');
-      // Optionally navigate back to the todo list or show a success message
-    })
-    .catch(error => {
-      console.error("Error updating todo:", error);
-      // Optionally show an error message to the user
-    });
-};
+
+  useEffect(() => {
+    const init = async () => {
+      if (!isNewTodo) {
+        const todo = await retreiveTodoApi(username, id);
+        setInitialValues({
+          description: todo.description,
+          targetDate: todo.targetDate,
+        });
+      }
+    };
+
+    init();
+  }, [id]);
+
+  const handleSubmit = async (values) => {
+    const valuesToSend = {
+      username: username,
+      description: values.description,
+      targetDate: values.targetDate,
+      done: false,
+    };
+
+    try {
+      if (isNewTodo) {
+        await createTodoApi(username, valuesToSend);
+      } else {
+        await updateTodoApi(username, id, {
+          ...valuesToSend,
+          id: id,
+        });
+      }
+
+      navigate("/todos");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    const init = async () => {
+      if (isNewTodo) {
+        // New todo case
+        setInitialValues({
+          description: "",
+          targetDate: "",
+        });
+        await createEmptyTodo();
+        return;
+      }
+
+      // Existing todo case
+      const todo = await retreiveTodoApi(username, id);
+      setInitialValues({
+        description: todo.description,
+        targetDate: todo.targetDate,
+      });
+    };
+
+    init();
+  }, [id]);
+
+  // const handleSubmit = (values) => {
+  //   console.log("Form submitted with values:", values);
+  //   // Here you would typically make an API call to update the todo item
+  //   // For example:
+  //   const valuesToUpdate = {
+  //     id: id,
+  //     username: username,  // ✅ Add this line
+  //     description: values.description,
+  //     targetDate: values.targetDate,
+  //     done: false, // You can adjust this based on your form inputs
+  //   };
+  //   updateTodoApi(username, id, valuesToUpdate)
+  //     .then(response => {
+  //       console.log("Todo updated successfully:", response);
+  //       navigate('/todos');
+  //       // Optionally navigate back to the todo list or show a success message
+  //     })
+  //     .catch(error => {
+  //       console.error("Error updating todo:", error);
+  //       // Optionally show an error message to the user
+  //     });
+  // };
 
   return (
     <div style={containerStyle}>
       <h2 style={headerStyle}>Update todo here</h2>
       <Formik
         enableReinitialize
-  initialValues={initialValues}
-  onSubmit={handleSubmit}
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
       >
         {({ values, handleChange, handleSubmit }) => (
           <>
@@ -155,7 +224,7 @@ const handleSubmit = (values) => {
                   justifySelf: "end",
                 }}
               >
-                Update Todo
+                {isNewTodo ? "Create Todo" : "Update Todo"}
               </button>
             </form>
           </>
