@@ -11,16 +11,28 @@ export default function LoginComponent() {
   const navigate = useNavigate();
   const {  isAuthenticated, setIsAuthenticated ,login} = useContext(Authcontext);
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    if (login(username, password)) {
-      setUsername("");
-      setPassword("");
-      navigate(`/welcome/${username}`);
-    } else {
-      setShowError(true);
-    }
+  // function handleSubmit(event) {
+  //   event.preventDefault();
+  //   if (login(username, password)) {
+  //     setUsername("");
+  //     setPassword("");
+  //     navigate(`/welcome/${username}`);
+  //   } else {
+  //     setShowError(true);
+  //   }
+  // }
+
+  async function handleSubmit(event) {
+  event.preventDefault();
+
+  const success = await login(username, password);
+
+  if (success) {
+    navigate(`/welcome/${username}`);
+  } else {
+    setShowError(true);
   }
+}
 
   function SuccessMessage() {
     return <div>Authentication successful</div>;
