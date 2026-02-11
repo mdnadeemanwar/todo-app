@@ -63,3 +63,18 @@ export  async function retreiveTodoApi(username, todoId) {
     }
 }
 
+
+
+export  async function updateTodoApi(username, todoId, todoData) {
+    try {
+        const { data } = await apiClient.put(`/users/${username}/todos/${todoId}`, todoData);
+
+        console.log("API response:", data);
+
+        return data ?? null;
+    } catch (error) {
+        console.error("API error:", error?.response || error);
+        throw error;
+    }
+}
+

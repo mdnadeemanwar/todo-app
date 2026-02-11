@@ -1,15 +1,20 @@
-import React, { use, useContext, useEffect } from "react";
+import React, { use, useContext, useEffect,useState } from "react";
 import { retreiveTodoApi } from "./api/TodoApiCall";
 import { Authcontext } from "./security/AuthContext";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { Formik } from "formik";
+import {updateTodoApi} from "./api/TodoApiCall";
 
 function TodoComponent() {
   const { username } = useContext(Authcontext);
-  const {id} = useParams();
+  console.log("username in todo component", username);
+  const { id } = useParams();
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [targetDate, setTargetDate] = React.useState("");   
-const containerStyle = {
+  const [targetDate, setTargetDate] = React.useState("");
+
+  const navigate = useNavigate();   
+  const containerStyle = {
     maxWidth: "560px",
     margin: "2rem auto",
     padding: "1.5rem",
@@ -17,36 +22,36 @@ const containerStyle = {
     boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
     background: "#f7f9fc",
     fontFamily: "Arial, sans-serif",
-};
+  };
 
-const headerStyle = {
+  const headerStyle = {
     margin: "0 0 1rem 0",
     color: "#333",
     fontSize: "1.25rem",
     textAlign: "center",
-};
+  };
 
-const formStyle = {
+  const formStyle = {
     display: "grid",
     gap: "0.75rem",
     gridTemplateColumns: "1fr 1fr",
     alignItems: "center",
-};
+  };
 
-const fullWidthStyle = {
+  const fullWidthStyle = {
     gridColumn: "1 / -1",
-};
+  };
 
-const inputStyle = {
+  const inputStyle = {
     padding: "0.6rem 0.75rem",
     borderRadius: "6px",
     border: "1px solid #d1d9e6",
     outline: "none",
     fontSize: "0.95rem",
     background: "#fff",
-};
+  };
 
-const buttonStyle = {
+  const buttonStyle = {
     padding: "0.65rem 0.9rem",
     borderRadius: "6px",
     border: "none",
@@ -55,59 +60,109 @@ const buttonStyle = {
     fontWeight: 600,
     cursor: "pointer",
     transition: "background 150ms ease",
-};
+  };
+
+//   useEffect(() => {
+//     try {
+//       const fetchData = async () => {
+//         const todo = await retreiveTodoApi(username, id);
+//         console.log("todo inside the useEffect :", todo);
+//         // Populate form fields with fetched todo data
+//         // For example:
+//         setTitle(todo.title);
+//         setDescription(todo.description);
+//         setTargetDate(todo.targetDate);
+//       };
+//       fetchData();
+//     } catch (error) {
+//       console.error("Error fetching todo:", error);
+//     }
+//   }, [id]);
+
+
+  const [initialValues, setInitialValues] = useState({
+  description: "",
+  targetDate: "",
+});
 
 useEffect(() => {
-    try {
-        const fetchData = async () => {
-            const todo = await retreiveTodoApi(username, id);
-            console.log("todo inside the useEffect :", todo);
-            // Populate form fields with fetched todo data
-            // For example:
-            setTitle(todo.title);
-            setDescription(todo.description);
-            setTargetDate(todo.targetDate);
-        };
-        fetchData();
-    } catch (error) {
-        console.error("Error fetching todo:", error);
-    }
-
+  async function fetchTodo() {
+    const todo = await retreiveTodoApi(username, id);
+    setInitialValues({
+      description: todo.description,
+      targetDate: todo.targetDate,
+    });
+  }
+  fetchTodo();
 }, [id]);
 
-return (
+const handleSubmit = (values) => {
+  console.log("Form submitted with values:", values);
+  // Here you would typically make an API call to update the todo item
+  // For example:
+  const valuesToUpdate = {
+    id: id,
+    username: username,  // ✅ Add this line
+    description: values.description,
+    targetDate: values.targetDate,
+    done: false, // You can adjust this based on your form inputs
+  };
+  updateTodoApi(username, id, valuesToUpdate)
+    .then(response => {
+      console.log("Todo updated successfully:", response);
+      navigate('/todos');
+      // Optionally navigate back to the todo list or show a success message
+    })
+    .catch(error => {
+      console.error("Error updating todo:", error);
+      // Optionally show an error message to the user
+    });
+};
+
+  return (
     <div style={containerStyle}>
-        <h2 style={headerStyle}>Update todo here</h2>
-        <form
-            style={formStyle}
-            onSubmit={(e) => {
-                e.preventDefault();
-                // handle submit
-            }}
-        >
-            <input
+      <h2 style={headerStyle}>Update todo here</h2>
+      <Formik
+        enableReinitialize
+  initialValues={initialValues}
+  onSubmit={handleSubmit}
+      >
+        {({ values, handleChange, handleSubmit }) => (
+          <>
+            {console.log("Formik values:", values)}
+            <form style={formStyle} onSubmit={handleSubmit}>
+              <input
                 type="text"
-                placeholder="Todo title"
+                name="description"
+                placeholder="Todo description"
                 style={{ ...inputStyle, ...fullWidthStyle }}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-            />
-            <input
+                value={values.description}
+                onChange={handleChange}
+              />
+              <input
                 type="date"
+                name="targetDate"
                 placeholder="Target date"
                 style={inputStyle}
-                value={targetDate}
-                onChange={(e) => setTargetDate(e.target.value)}
-            />
-            <button
+                value={values.targetDate}
+                onChange={handleChange}
+              />
+              <button
                 type="submit"
-                style={{ ...buttonStyle, gridColumn: "1 / -1", justifySelf: "end" }}
-            >
+                style={{
+                  ...buttonStyle,
+                  gridColumn: "1 / -1",
+                  justifySelf: "end",
+                }}
+              >
                 Update Todo
-            </button>
-        </form>
+              </button>
+            </form>
+          </>
+        )}
+      </Formik>
     </div>
-);
+  );
 }
 
 export default TodoComponent;
