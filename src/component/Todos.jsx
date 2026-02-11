@@ -27,7 +27,8 @@ function Todos() {
       try {
         const response = await apiCallForTodoApiWithPathVariable(username);
         console.log("APi res inside the toods ", response);
-        setTodos(response);
+        const sortedTodos = [...(response ?? [])].sort((a, b) => a.id - b.id);
+        setTodos(sortedTodos);
       } catch (error) {
         console.error(error);
       }

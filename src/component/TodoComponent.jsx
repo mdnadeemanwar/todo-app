@@ -1,17 +1,16 @@
-import React, { use, useContext, useEffect, useState } from "react";
-import { retreiveTodoApi } from "./api/TodoApiCall";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  retreiveTodoApi,
+  updateTodoApi,
+  createTodoApi,
+} from "./api/TodoApiCall";
 import { Authcontext } from "./security/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { Formik } from "formik";
-import { updateTodoApi, createTodoApi } from "./api/TodoApiCall";
 
 function TodoComponent() {
   const { username } = useContext(Authcontext);
-  console.log("username in todo component", username);
   const { id } = useParams();
-  const [title, setTitle] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [targetDate, setTargetDate] = React.useState("");
 
   const navigate = useNavigate();
   const containerStyle = {
@@ -62,61 +61,11 @@ function TodoComponent() {
     transition: "background 150ms ease",
   };
 
-  //   useEffect(() => {
-  //     try {
-  //       const fetchData = async () => {
-  //         const todo = await retreiveTodoApi(username, id);
-  //         console.log("todo inside the useEffect :", todo);
-  //         // Populate form fields with fetched todo data
-  //         // For example:
-  //         setTitle(todo.title);
-  //         setDescription(todo.description);
-  //         setTargetDate(todo.targetDate);
-  //       };
-  //       fetchData();
-  //     } catch (error) {
-  //       console.error("Error fetching todo:", error);
-  //     }
-  //   }, [id]);
-
   const [initialValues, setInitialValues] = useState({
     description: "",
     targetDate: "",
   });
-  console.log("id:", id);
   const isNewTodo = String(id) === "-1";
-
-  const createEmptyTodo = async () => {
-    const valuesToSend = {
-      id: id,
-      username: username, // ✅ Add this line
-      description: description,
-      targetDate: targetDate,
-      done: false, // You can adjust this based on your form inputs
-    };
-    try {
-      const response = await createTodoApi(username, valuesToSend);
-
-      console.log("Todo created successfully:", response);
-      navigate(`/todo/${response.id}`);
-    } catch (error) {
-      console.error("Error creating todo:", error);
-    }
-  };
-
-  useEffect(() => {
-    const init = async () => {
-      if (!isNewTodo) {
-        const todo = await retreiveTodoApi(username, id);
-        setInitialValues({
-          description: todo.description,
-          targetDate: todo.targetDate,
-        });
-      }
-    };
-
-    init();
-  }, [id]);
 
   const handleSubmit = async (values) => {
     const valuesToSend = {
@@ -128,11 +77,14 @@ function TodoComponent() {
 
     try {
       if (isNewTodo) {
-        await createTodoApi(username, valuesToSend);
-      } else {
-        await updateTodoApi(username, id, {
+        await createTodoApi(username, {
           ...valuesToSend,
-          id: id,
+          id: -1,
+        });
+      } else {
+        await updateTodoApi(username, Number(id), {
+          ...valuesToSend,
+          id: Number(id),
         });
       }
 
@@ -145,16 +97,13 @@ function TodoComponent() {
   useEffect(() => {
     const init = async () => {
       if (isNewTodo) {
-        // New todo case
         setInitialValues({
           description: "",
           targetDate: "",
         });
-        await createEmptyTodo();
         return;
       }
 
-      // Existing todo case
       const todo = await retreiveTodoApi(username, id);
       setInitialValues({
         description: todo.description,
@@ -163,7 +112,7 @@ function TodoComponent() {
     };
 
     init();
-  }, [id]);
+  }, [id, isNewTodo, username]);
 
   // const handleSubmit = (values) => {
   //   console.log("Form submitted with values:", values);
@@ -190,44 +139,43 @@ function TodoComponent() {
 
   return (
     <div style={containerStyle}>
-      <h2 style={headerStyle}>Update todo here</h2>
+      <h2 style={headerStyle}>
+        {isNewTodo ? "Create todo here" : "Update todo here"}
+      </h2>
       <Formik
         enableReinitialize
         initialValues={initialValues}
         onSubmit={handleSubmit}
       >
         {({ values, handleChange, handleSubmit }) => (
-          <>
-            {console.log("Formik values:", values)}
-            <form style={formStyle} onSubmit={handleSubmit}>
-              <input
-                type="text"
-                name="description"
-                placeholder="Todo description"
-                style={{ ...inputStyle, ...fullWidthStyle }}
-                value={values.description}
-                onChange={handleChange}
-              />
-              <input
-                type="date"
-                name="targetDate"
-                placeholder="Target date"
-                style={inputStyle}
-                value={values.targetDate}
-                onChange={handleChange}
-              />
-              <button
-                type="submit"
-                style={{
-                  ...buttonStyle,
-                  gridColumn: "1 / -1",
-                  justifySelf: "end",
-                }}
-              >
-                {isNewTodo ? "Create Todo" : "Update Todo"}
-              </button>
-            </form>
-          </>
+          <form style={formStyle} onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="description"
+              placeholder="Todo description"
+              style={{ ...inputStyle, ...fullWidthStyle }}
+              value={values.description}
+              onChange={handleChange}
+            />
+            <input
+              type="date"
+              name="targetDate"
+              placeholder="Target date"
+              style={inputStyle}
+              value={values.targetDate}
+              onChange={handleChange}
+            />
+            <button
+              type="submit"
+              style={{
+                ...buttonStyle,
+                gridColumn: "1 / -1",
+                justifySelf: "end",
+              }}
+            >
+              {isNewTodo ? "Create Todo" : "Update Todo"}
+            </button>
+          </form>
         )}
       </Formik>
     </div>
