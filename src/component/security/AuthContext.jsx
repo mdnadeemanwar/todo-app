@@ -1,8 +1,7 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState } from "react";
 import { basicApiCallForHelloWorldWithToken } from "../api/HelloWorldApiCall";
-import axios from "axios";
-
 export const Authcontext = createContext();
+
 
 function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Replace with actual authentication logic
@@ -46,49 +45,73 @@ function AuthProvider({ children }) {
   //       });
   //   }
 
-  useEffect(() => {
-    if (token) {
-      axios.interceptors.request.use((config) => {
-        config.headers.Authorization = token;
-        return config;
-      });
-    }
-  }, [token]);
+//   async function login(username, password) {
+//     const baToken = "Basic " + btoa(`${username}:${password}`);
 
-  async function login(username, password) {
-    const baToken = "Basic " + btoa(`${username}:${password}`);
+//     try {
+//       const response = await basicApiCallForHelloWorldWithToken(
+//         username,
+//         baToken,
+//       );
+//         // axios.defaults.headers.common['Authorization'] = baToken;
 
-    try {
-      const response = await basicApiCallForHelloWorldWithToken(
-        username,
-        baToken,
-      );
-    axios.defaults.headers.common['Authorization'] = baToken;
+//         // apiClient.interceptors.request.use((config) => {
+//         //   config.headers.Authorization = baToken;
+//         //   return config;
+//         // });
+//         // localStorage.setItem("token", baToken);  // ✅ store
+//         apiClientWithInterceptor.defaults.headers.common['Authorization'] = baToken;
+//         localStorage.setItem("token", baToken);
 
+//       console.log("API response in login:", response);
 
-      console.log("API response in login:", response);
+//       setIsAuthenticated(true);
+//       setUsername(username);
+//       setToken(baToken); // ✅ STORE TOKEN
 
-      setIsAuthenticated(true);
-      setUsername(username);
-      setToken(baToken); // ✅ STORE TOKEN
+//       return true; // ✅ IMPORTANT
+//     } catch (error) {
+//       console.error("API error in login:", error);
 
-      return true; // ✅ IMPORTANT
-    } catch (error) {
-      console.error("API error in login:", error);
+//       setIsAuthenticated(false);
+//       setUsername("");
+//       setToken(null);
 
-      setIsAuthenticated(false);
-      setUsername("");
-      setToken(null);
+//       return false; // ✅ IMPORTANT
+//     }
+//   }
+async function login(username, password) {
+  const baToken = "Basic " + btoa(`${username}:${password}`);
 
-      return false; // ✅ IMPORTANT
-    }
-  }
+  try {
+    await basicApiCallForHelloWorldWithToken(
+      username,
+      baToken
+    );
 
-  function logout() {
+    localStorage.setItem("token", baToken);  // ✅ store token
+
+    setIsAuthenticated(true);
+    setUsername(username);
+    setToken(baToken);
+
+    return true;
+  } catch (error) {
     setIsAuthenticated(false);
+    setUsername("");
     setToken(null);
-    delete axios.defaults.headers.common['Authorization'];
+    localStorage.removeItem("token");
+
+    return false;
   }
+}
+
+function logout() {
+  setIsAuthenticated(false);
+  setUsername("");
+  setToken(null);
+  localStorage.removeItem("token");
+}
 
   return (
     <Authcontext.Provider
@@ -100,6 +123,7 @@ function AuthProvider({ children }) {
         setIsAuthenticated,
         login,
         logout,
+        token
       }}
     >
       {children}

@@ -3,13 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { Authcontext } from "./security/AuthContext";
 
 export default function LoginComponent() {
-  const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
-  const {  isAuthenticated, setIsAuthenticated ,login} = useContext(Authcontext);
+  const { login } = useContext(Authcontext);
 
   // function handleSubmit(event) {
   //   event.preventDefault();
@@ -33,10 +32,6 @@ export default function LoginComponent() {
     setShowError(true);
   }
 }
-
-  function SuccessMessage() {
-    return <div>Authentication successful</div>;
-  }
 
   function FailureMessage() {
     return (

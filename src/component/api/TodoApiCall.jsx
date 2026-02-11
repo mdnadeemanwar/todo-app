@@ -1,13 +1,4 @@
-
-import axios from "axios";
-
-
-const apiClient = axios.create({
-    baseURL: "http://localhost:8080",
-    headers: {
-        "Content-Type": "application/json",
-    },
-});
+import apiClient from "./ApiClient";
 
 
 export default async function apiCallForTodoApi() {
@@ -93,4 +84,3 @@ export  async function createTodoApi(username, todoData) {
 
 
  
-
